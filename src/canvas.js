@@ -1,35 +1,41 @@
 /*
 * @Author: willclass
 * @Date:   2016-06-03 16:24:12
-* @Last Modified by:   willclass
-* @Last Modified time: 2016-06-03 20:14:07
+* @Last Modified by:   ibeeger
+* @Last Modified time: 2016-06-04 16:47:43
 */
 
 'use strict';
 
 import React,{Component} from 'react'
 import RaisedButton from 'material-ui/RaisedButton';
-
+import Snackbar from 'material-ui/Snackbar';
 
 
 const Button = {
 	boxShadow:"none",
-	display:"block"
+	display:"inline-block",
+	width:"46%",
+	margin:"0 1%"
+}
+
+const buttons={
+	textAlign:"center"
 }
 
 
 class Canvas extends Component {
 	constructor(props) {
 	  super(props);
-	
+	  
 	  this.state = {
 	  	isdraw:false
 	  };
-
 	  this.touchStart = this.touchStart.bind(this);
 	  this.touchMove = this.touchMove.bind(this);
 	  this.touchEnd = this.touchEnd.bind(this);
 	  this.fetchData = this.fetchData.bind(this);
+	  this.cleanCanvas = this.cleanCanvas.bind(this);
 	}
 	componentDidMount() {
 		this.cs = document.getElementById('canvas');
@@ -41,48 +47,49 @@ class Canvas extends Component {
 		})
 	}
 
-	fetchData(){
 
-		let base64 = encodeURI(this.cs.toDataURL("image/jpeg",0.7)).replace("data:image/jpeg;base64,","");
+	cleanCanvas(){
+		this.ctx.clearRect(0,0,this.state.w,360)
+	}
+
+	fetchData(){
+		let _this= this;
+
+		let base64 =this.cs.toDataURL("image/jpeg",0.5).replace("data:image/jpeg;base64,","");
 		let data = {
-            	fromdevice:"pc",
-            	clientip:"10.10.10.0",
-            	detecttype:"LocateRecognize",
-            	languagetype:"CHN_ENG",
-            	imagetype:"1",
-            	version:"v1",
-            	sizetype:"small",
             	image:base64
             };
-            console.log(data);
-		 var opt = {
-            url: 'http://apis.baidu.com/idl_baidu/baiduocrpay/idlocrpaid',
-			// data: "fromdevice=pc&clientip=10.10.10.0&detecttype=LocateRecognize&languagetype=CHN_ENG&imagetype=1&version=v1&sizetype=small&image="+base64,
-            data:JSON.stringify(data),
-            type: "POST",
-            contentType: 'application/x-www-form-urlencoded',
-            beforeSend: function(jqXHR, settings) {
-                 jqXHR.setRequestHeader('apikey', 'd3ba4f86f237930d2abae2892b7d789d');
-             },
-            success: function (e) {
-                 console.log(e);
 
+		 var opt = {
+            url: '/baidu/',
+            data: JSON.stringify(data),
+            type: "POST",
+            contentType:"application/json; charset=utf8",
+            success: function (e) {
+            	console.log(e.length)
+            	if (e.length>0) {
+            		_this.props.updataData(e);	
+            	}else{
+            		_this.setState({
+            			error:e.msg,
+            			errorOpen:true
+            		})
+            	}
             }
-        }
+        };
+
          $.ajax(opt);
-		 return true;
+		 return ;
 	}
 
 	touchStart(e){
 		e.stopPropagation();
 		e.preventDefault();
 		e = e.touches[0];
-
 		let ctx = this.ctx;
 		this.setState({
 			isdraw:true
 		})
-
 		this.ctx.moveTo((e.pageX-3),(e.pageY-this.state.top-5));
 		ctx.lineWidth = 3;
 		ctx.strokeStyle = "#c00";
@@ -103,14 +110,18 @@ class Canvas extends Component {
 			ctx.lineTo((e.pageX-3),(e.pageY-this.state.top-5));
 			ctx.stroke();
 		}
-		
 	}
 
 	render(){
 		return(
 			<div className="canvasContent">
 			  <canvas id="canvas" width={this.state.w} height={360} onTouchStart={this.touchStart} onTouchEnd={this.touchEnd} onTouchMove={this.touchMove} ></canvas>
-			  <p><RaisedButton style={Button} onTouchTap={this.fetchData} primary={true} label="识别" /></p>
+			  <p style={buttons}><RaisedButton style={Button} onTouchTap={this.fetchData} primary={true} label="识别" /><RaisedButton style={Button} onTouchTap={this.cleanCanvas} primary={true} label="重写" /></p>
+			   <Snackbar
+		          open={this.state.errorOpen}
+		          message={this.state.error}
+		          autoHideDuration={3000}
+		        />
 			</div>
 			)
 	}

@@ -1,8 +1,8 @@
 /*
 * @Author: willclass
 * @Date:   2016-06-03 12:03:47
-* @Last Modified by:   willclass
-* @Last Modified time: 2016-06-03 18:03:25
+* @Last Modified by:   ibeeger
+* @Last Modified time: 2016-06-03 21:04:45
 */
 
 'use strict';
@@ -18,7 +18,8 @@ import CircularProgress from 'material-ui/CircularProgress';
 
 
 import Canvas from './Canvas.js';
- 
+
+
 class Main  extends React.Component {
     constructor(props) {
         super(props);
@@ -33,11 +34,14 @@ class Main  extends React.Component {
     	this.setState({open: !this.state.open})
     }
 
+    getWordData(arg){
+    	console.log(arg);
+    }
+
     render() {
     	return(<div className="main">
     			<AppBar title="标题" onLeftIconButtonTouchTap={this.handleToggle}  />
-				<Canvas />
-
+				<Canvas updataData={this.getWordData} />
     			<Drawer
 		          docked={false}
 		          width={220}
