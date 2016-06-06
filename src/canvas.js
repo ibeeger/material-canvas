@@ -2,7 +2,7 @@
 * @Author: willclass
 * @Date:   2016-06-03 16:24:12
 * @Last Modified by:   ibeeger
-* @Last Modified time: 2016-06-06 20:30:39
+* @Last Modified time: 2016-06-06 21:02:29
 */
 
 'use strict';
@@ -83,7 +83,7 @@ class Canvas extends Component {
          	loading:true
          })
 		 var opt = {
-            url: '/baidu/',
+            url: '/api/ocr',
             data: JSON.stringify(data),
             type: "POST",
             contentType:"application/json; charset=utf8",
@@ -109,6 +109,9 @@ class Canvas extends Component {
 	touchStart(e){
 		e.stopPropagation();
 		e.preventDefault();
+		if (this.state.loading) {
+			return
+		}
 		e = e.touches[0];
 		let ctx = this.ctx;
 		this.setState({
@@ -132,6 +135,9 @@ class Canvas extends Component {
 
 	touchMove(e){
 		e.stopPropagation();
+		if (this.state.loading) {
+			return
+		}
 		e = e.touches[0];
 		let ctx = this.ctx;
 		if (this.state.isdraw) {
@@ -148,7 +154,7 @@ class Canvas extends Component {
 			for(var k=0; k<this.state.words.length; k++){
 					_arr.push(<li>{this.state.words[k]["word"]}</li>)
 			}
-			
+
 			arr = <ul className="wordlist">{_arr}</ul>
 		};
 		return arr;

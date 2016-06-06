@@ -1,8 +1,8 @@
 /* 
  * @Author: willclass
  * @Date:   2016-02-17 15:35:45
- * @Last Modified by:   willclass
- * @Last Modified time: 2016-06-03 17:52:21
+ * @Last Modified by:   ibeeger
+ * @Last Modified time: 2016-06-06 20:43:19
  */
 
 'use strict';
@@ -50,7 +50,7 @@ module.exports = {
 	},
 	plugins: [
 		commonsPlugin,
-		// minjs,
+		minjs,
 		prod
 	]
 };
